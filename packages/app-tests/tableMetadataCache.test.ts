@@ -99,3 +99,23 @@ test("table metadata invalidation keeps unrelated schemas cached", async () => {
   assert.equal(getCachedTableMetadata(publicRequest), undefined);
   assert.equal(getCachedTableMetadata(auditRequest)?.metadata.tableName, "audit_log");
 });
+
+test("data tab metadata preserves an explicit unqualified table identity", async () => {
+  const { tableMetadataToDataTabMeta } = await import("../../apps/desktop/src/lib/metadata/tableMetadataCache.ts");
+
+  const tableMeta = tableMetadataToDataTabMeta(
+    {
+      schema: "logical_database",
+      tableName: "users",
+      tableType: "TABLE",
+      database: "logical_database",
+      columns: [],
+      indexes: [],
+      primaryKeys: [],
+      cachedAt: Date.now(),
+    },
+    undefined,
+  );
+
+  assert.equal(tableMeta.schema, undefined);
+});

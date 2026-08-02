@@ -157,6 +157,31 @@ describe("useSidebarDataOpenRuntime", () => {
     });
   });
 
+  it("keeps a native MySQL table unqualified after metadata returns its logical database", async () => {
+    mocks.databaseType = "mysql";
+    mocks.loadTableMetadata.mockResolvedValue({
+      metadata: {
+        schema: "app",
+        tableName: "users",
+        tableType: "TABLE",
+        database: "app",
+        columns: [{ name: "id", data_type: "bigint", is_nullable: false, column_default: null, is_primary_key: true, extra: null }],
+        indexes: [],
+        primaryKeys: ["id"],
+        cachedAt: Date.now(),
+      },
+      cacheStatus: "miss",
+      ageMs: 0,
+    });
+
+    await useSidebarDataOpenRuntime().openData({ ...tableNode, schema: undefined });
+
+    await vi.waitFor(() => {
+      expect(mocks.tabs[0]?.tableMeta?.columns).toHaveLength(1);
+      expect(mocks.tabs[0]?.tableMeta?.schema).toBeUndefined();
+    });
+  });
+
   it("keeps row identity pending while delayed metadata is in flight and the query finishes first", async () => {
     // 元数据延迟：查询先返回，元数据仍挂起
     let releaseMetadata: () => void = () => {};

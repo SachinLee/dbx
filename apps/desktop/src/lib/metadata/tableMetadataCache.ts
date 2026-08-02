@@ -103,7 +103,12 @@ export function getCachedTableMetadata(request: Pick<TableMetadataRequest, "conn
   return { metadata: hit.value, cacheStatus: hit.stale ? "stale" : "hit", ageMs: hit.ageMs };
 }
 
-export function tableMetadataToDataTabMeta(metadata: TableMetadata, schema = metadata.schema): NonNullable<QueryTab["tableMeta"]> {
+/**
+ * Converts loaded metadata into data-tab state without changing the table's
+ * SQL identity. `metadata.schema` is the scope used to query metadata, which
+ * can differ from the schema used in table data SQL for proxied databases.
+ */
+export function tableMetadataToDataTabMeta(metadata: TableMetadata, schema: string | undefined): NonNullable<QueryTab["tableMeta"]> {
   return {
     schema,
     tableName: metadata.tableName,
