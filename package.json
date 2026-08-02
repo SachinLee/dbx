@@ -26,6 +26,8 @@
     "typecheck": "vue-tsc --noEmit --project apps/desktop/tsconfig.json",
     "build": "vite build --config apps/desktop/vite.config.ts",
     "build:checked": "pnpm typecheck && pnpm build",
+    "package:teledb": "powershell -ExecutionPolicy Bypass -File .\\scripts\\package-teledb.ps1",
+    "package:teledb:release": "powershell -ExecutionPolicy Bypass -File .\\scripts\\package-teledb.ps1 -Mode Release",
     "check": "node scripts/run-check.mjs",
     "db:env": "node scripts/database-env.mjs",
     "test:db-env": "node --test scripts/database-env.test.mjs",
